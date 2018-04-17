@@ -1,7 +1,8 @@
 package com.jose.ldapspring.directoryServer;
 
-import com.jose.ldapspring.config.ApacheDSConfig;
+import com.jose.ldapspring.configuration.ApacheDSConfig;
 import com.sun.istack.internal.NotNull;
+import org.apache.directory.api.ldap.model.exception.LdapException;
 import org.apache.directory.api.ldap.model.exception.LdapInvalidDnException;
 import org.apache.directory.api.ldap.model.name.Dn;
 import org.apache.directory.api.ldap.model.schema.SchemaManager;
@@ -24,6 +25,7 @@ import org.apache.directory.server.core.partition.impl.btree.jdbm.JdbmPartition;
 import org.apache.directory.server.core.partition.ldif.LdifPartition;
 import org.apache.directory.server.i18n.I18n;
 import org.apache.directory.server.ldap.LdapServer;
+import org.apache.directory.server.protocol.shared.transport.TcpTransport;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -48,6 +50,7 @@ public class EmbeddedApacheDS {
     @Autowired
     public EmbeddedApacheDS(@NotNull ApacheDSConfig apacheDSConfig) throws Exception {
         initDirectoryService(new File(apacheDSConfig.getWorkDirectory()));
+        startServer();
     }
 
     /**
@@ -77,26 +80,32 @@ public class EmbeddedApacheDS {
         // mandatory to call this method to set the system partition
         service.setSystemPartition(systemPartition);
 
+        //allow anonymous connect
+        //service.setAllowAnonymousAccess(true);
+
         // Disable the ChangeLog system
         service.getChangeLog().setEnabled(false);
         service.setDenormalizeOpAttrsEnabled(true);
 
         // Create SGR partition
-        addPartition("sgr", "dc=sgr,dc=org", service.getDnFactory());
+        Partition sgrPartition = addPartition("sgrusers", "ou=sgrusers,dc=sgr,dc=com", service.getDnFactory());
 
-        // Index some attributes on the apache partition
+        // Index some attributes on the partition
         // addIndex(apachePartition, "objectClass", "ou", "uid");
 
-        // And start the service
+        // Start the service
         service.startup();
 
-        // Inject the context entry for dc=sgr,dc=org partition
-/*        if (!service.getAdminSession().exists(apachePartition.getSuffixDn())) {
-            Dn dnSgr = new Dn( "dc=sgr,dc=org" );
-            Entry entrySgr = service.newEntry(dnSgr);
-            entrySgr.add("objectClass", "top", "domain", "extensibleObject");
-            entrySgr.add("dc", "sgr");
-            service.getAdminSession().add(entrySgr);
+        // Inject the context entry for partition if it does not already exist
+        /*try {
+            service.getAdminSession().lookup(sgrPartition.getSuffixDn());
+        }
+        catch (LdapException lnnfe) {
+            Dn dnFoo = new Dn( "ou=sgrusers,dc=example,dc=com" );
+            Entry entryFoo = service.newEntry( dnFoo );
+            entryFoo.add( "objectClass", "top", "domain", "extensibleObject" );
+            entryFoo.add( "dc", "department" );
+            service.getAdminSession().add( entryFoo );
         }*/
     }
 
@@ -105,15 +114,14 @@ public class EmbeddedApacheDS {
      *
      * @throws Exception
      */
-/*    public void startServer() throws Exception
-    {
+    public void startServer() throws Exception {
         server = new LdapServer();
-        int serverPort = 10389;
-        server.setTransports( new TcpTransport( serverPort ) );
-        server.setDirectoryService( service );
+        int serverPort = 10412;
+        server.setTransports(new TcpTransport(serverPort));
+        server.setDirectoryService(service);
 
         server.start();
-    }*/
+    }
 
 
     /**
@@ -129,10 +137,10 @@ public class EmbeddedApacheDS {
     {
         // Create a new partition with the given partition id
         JdbmPartition partition = new JdbmPartition(service.getSchemaManager(), dnFactory);
-        partition.setId( partitionId );
-        partition.setPartitionPath( new File( service.getInstanceLayout().getPartitionsDirectory(), partitionId ).toURI() );
-        partition.setSuffixDn( new Dn( partitionDn ) );
-        service.addPartition( partition );
+        partition.setId(partitionId);
+        partition.setPartitionPath(new File(service.getInstanceLayout().getPartitionsDirectory(), partitionId ).toURI());
+        partition.setSuffixDn(new Dn(partitionDn));
+        service.addPartition(partition);
 
         return partition;
     }
@@ -205,8 +213,8 @@ public class EmbeddedApacheDS {
         // DO NOT add this via addPartition() method, trunk code complains about duplicate partition
         JdbmPartition systemPartition = new JdbmPartition(service.getSchemaManager(), service.getDnFactory());
         systemPartition.setId("system");
-        systemPartition.setPartitionPath(new File( service.getInstanceLayout().getPartitionsDirectory(), systemPartition.getId() ).toURI());
-        systemPartition.setSuffixDn(new Dn( ServerDNConstants.SYSTEM_DN ));
+        systemPartition.setPartitionPath(new File(service.getInstanceLayout().getPartitionsDirectory(), systemPartition.getId()).toURI());
+        systemPartition.setSuffixDn(new Dn(ServerDNConstants.SYSTEM_DN));
         systemPartition.setSchemaManager(service.getSchemaManager());
         return systemPartition;
     }
