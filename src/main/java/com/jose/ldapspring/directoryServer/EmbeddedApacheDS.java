@@ -2,7 +2,6 @@ package com.jose.ldapspring.directoryServer;
 
 import com.jose.ldapspring.configuration.ApacheDSConfig;
 import com.sun.istack.internal.NotNull;
-import org.apache.directory.api.ldap.model.exception.LdapException;
 import org.apache.directory.api.ldap.model.exception.LdapInvalidDnException;
 import org.apache.directory.api.ldap.model.name.Dn;
 import org.apache.directory.api.ldap.model.schema.SchemaManager;
@@ -27,6 +26,7 @@ import org.apache.directory.server.i18n.I18n;
 import org.apache.directory.server.ldap.LdapServer;
 import org.apache.directory.server.protocol.shared.transport.TcpTransport;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -34,12 +34,12 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-@Service
+@Configuration
 public class EmbeddedApacheDS {
     /** The directory service */
     private DirectoryService service;
 
-    /** The LDAP server */
+    /** The LDAP server to be exposed to Spring Data LDAP*/
     private LdapServer server;
 
     /**
@@ -61,7 +61,6 @@ public class EmbeddedApacheDS {
      * @throws Exception if there were some problems while initializing the system
      */
     private void initDirectoryService(File workDir) throws Exception {
-        // Initialize the LDAP service
         service = new DefaultDirectoryService();
         service.setInstanceLayout(new InstanceLayout(workDir));
 
@@ -133,8 +132,7 @@ public class EmbeddedApacheDS {
      * @return The newly added partition
      * @throws Exception If the partition can't be added
      */
-    private Partition addPartition(String partitionId, String partitionDn, DnFactory dnFactory ) throws Exception
-    {
+    private Partition addPartition(String partitionId, String partitionDn, DnFactory dnFactory) throws Exception {
         // Create a new partition with the given partition id
         JdbmPartition partition = new JdbmPartition(service.getSchemaManager(), dnFactory);
         partition.setId(partitionId);
