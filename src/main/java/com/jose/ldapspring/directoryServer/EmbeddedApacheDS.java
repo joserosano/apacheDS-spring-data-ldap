@@ -43,12 +43,10 @@ public class EmbeddedApacheDS {
     private LdapServer server;
 
     /**
-     * Creates a new instance of EmbeddedADS. It initializes the directory service.
-     *
-     * @throws Exception If something went wrong
+     * Creates a new instance of Embedded ApacheDS.
+     * It initializes the directory service and starts the server.
      */
-    @Autowired
-    public EmbeddedApacheDS(@NotNull ApacheDSConfig apacheDSConfig) throws Exception {
+    public EmbeddedApacheDS(ApacheDSConfig apacheDSConfig) throws Exception {
         initDirectoryService(new File(apacheDSConfig.getWorkDirectory()));
         startServer();
     }
@@ -113,7 +111,7 @@ public class EmbeddedApacheDS {
      *
      * @throws Exception
      */
-    public void startServer() throws Exception {
+    private void startServer() throws Exception {
         server = new LdapServer();
         int serverPort = 10412;
         server.setTransports(new TcpTransport(serverPort));
