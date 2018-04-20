@@ -1,4 +1,4 @@
-package com.jose.ldapspring.ldap;
+package com.jose.ldapspring.domain.core.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import org.springframework.ldap.odm.annotations.Attribute;

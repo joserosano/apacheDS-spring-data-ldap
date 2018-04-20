@@ -1,7 +1,7 @@
 package com.jose.ldapspring.api;
 
-import com.jose.ldapspring.ldap.User;
-import com.jose.ldapspring.ldap.UserService;
+import com.jose.ldapspring.domain.core.user.User;
+import com.jose.ldapspring.service.UserService;
 import org.springframework.web.bind.annotation.*;
 
 @RestController

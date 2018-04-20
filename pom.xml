@@ -9,7 +9,7 @@
     <packaging>jar</packaging>
 
     <name>ldapspring</name>
-    <description>Demo project for Spring Boot + Spring Data LDAP + Embedded ApacheDS</description>
+    <description>Demo project for Flowable + Spring Boot2 + Spring Data LDAP + Embedded ApacheDS</description>
 
     <parent>
         <groupId>org.springframework.boot</groupId>
@@ -25,16 +25,26 @@
     </properties>
 
     <dependencies>
+        <!-- Flowable dependencies (first one contains spring boot) -->
         <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-web</artifactId>
+            <groupId>org.flowable</groupId>
+            <artifactId>flowable-spring-boot-starter</artifactId>
+            <version>6.3.0</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.flowable</groupId>
+            <artifactId>flowable-ldap-configurator</artifactId>
+            <version>6.3.0</version>
+        </dependency>
+
+        <!-- Spring dependencies -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-data-ldap</artifactId>
         </dependency>
 
+        <!-- Apache DS -->
         <dependency>
             <groupId>org.apache.directory.server</groupId>
             <artifactId>apacheds-all</artifactId>
@@ -47,6 +57,13 @@
             </exclusions>
         </dependency>
 
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- Test dependencies -->
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-test</artifactId>

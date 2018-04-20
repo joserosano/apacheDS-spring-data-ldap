@@ -1,7 +1,6 @@
-package com.jose.ldapspring.directoryServer;
+package com.jose.ldapspring.ldap.embedded;
 
-import com.jose.ldapspring.configuration.ApacheDSConfig;
-import com.sun.istack.internal.NotNull;
+import com.jose.ldapspring.config.ApacheDSConfig;
 import org.apache.directory.api.ldap.model.exception.LdapInvalidDnException;
 import org.apache.directory.api.ldap.model.name.Dn;
 import org.apache.directory.api.ldap.model.schema.SchemaManager;
@@ -25,9 +24,7 @@ import org.apache.directory.server.core.partition.ldif.LdifPartition;
 import org.apache.directory.server.i18n.I18n;
 import org.apache.directory.server.ldap.LdapServer;
 import org.apache.directory.server.protocol.shared.transport.TcpTransport;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.stereotype.Service;
 
 import java.io.File;
 import java.util.HashSet;

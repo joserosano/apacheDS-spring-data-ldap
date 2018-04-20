@@ -1,4 +1,4 @@
-package com.jose.ldapspring.ldap;
+package com.jose.ldapspring.domain.core.user;
 
 import org.springframework.data.ldap.repository.LdapRepository;
 import org.springframework.stereotype.Repository;
